@@ -46,7 +46,17 @@ ENV/
 .env.development.local
 .env.test.local
 .env.production.local
-
+.env
 # Temporary files
 tmp/
 temp/
+
+# Project specific
+pyproject.toml
+temp_audio*
+*.wav
+*.mp3
+*.m4a
+
+# System files
+Thumbs.db

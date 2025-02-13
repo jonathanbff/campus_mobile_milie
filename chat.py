@@ -12,6 +12,22 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 import tempfile
 from datetime import datetime
+import tomli  # Add this import for reading TOML files
+
+def load_project_config():
+    """Load project configuration from pyproject.toml"""
+    try:
+        with open("pyproject.toml", "rb") as f:
+            return tomli.load(f)
+    except Exception as e:
+        st.error(f"Error loading project configuration: {str(e)}")
+        return None
+
+# Load project configuration
+project_config = load_project_config()
+if project_config:
+    st.sidebar.text(f"Version: {project_config['project']['version']}")
+    st.sidebar.text(f"App: {project_config['project']['name']}")
 
 # Carrega as variáveis de ambiente
 load_dotenv()

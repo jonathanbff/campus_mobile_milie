@@ -23,14 +23,40 @@ def load_project_config():
         st.error(f"Error loading project configuration: {str(e)}")
         return None
 
+def get_groq_api_key():
+    """Get Groq API key with priority: env > secrets > toml"""
+    # Try environment variable first
+    api_key = os.getenv("GROQ_API_KEY")
+    if api_key:
+        return api_key
+    
+    # Try Streamlit secrets
+    if hasattr(st.secrets, "GROQ_API_KEY"):
+        return st.secrets.GROQ_API_KEY
+    
+    # Finally, try TOML config
+    config = load_project_config()
+    if config and "tool" in config and "milie-mind" in config["tool"]:
+        return config["tool"]["milie-mind"].get("groq_api_key")
+    
+    return None
+
 # Load project configuration
 project_config = load_project_config()
 if project_config:
     st.sidebar.text(f"Version: {project_config['project']['version']}")
     st.sidebar.text(f"App: {project_config['project']['name']}")
 
-# Carrega as variáveis de ambiente
+# Load environment variables
 load_dotenv()
+
+# Initialize Groq client with API key from multiple sources
+api_key = get_groq_api_key()
+if not api_key:
+    st.error("No Groq API key found. Please set it in .env, secrets, or pyproject.toml")
+    st.stop()
+
+client_groq = Groq(api_key=api_key)
 
 # Configurações iniciais da página
 st.set_page_config(
@@ -178,9 +204,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-# Inicializa o cliente Groq
-client_groq = Groq(api_key=os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY"))
 
 # Função para transcrever o áudio
 def transcrever_audio(audio_path):

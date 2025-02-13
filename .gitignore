@@ -47,6 +47,7 @@ ENV/
 .env.test.local
 .env.production.local
 .env
+
 # Temporary files
 tmp/
 temp/

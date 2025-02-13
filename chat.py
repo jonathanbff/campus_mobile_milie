@@ -23,26 +23,40 @@ st.set_page_config(
 )
 
 def load_project_config():
-    """Load project configuration from pyproject.toml"""
+    """Load project configuration from pyproject.toml or return defaults"""
     try:
         with open("pyproject.toml", "rb") as f:
             return tomli.load(f)
+    except FileNotFoundError:
+        # Return default configuration instead of showing error
+        return {
+            "project": {
+                "name": "Milie Mind Bot",
+                "version": "1.0.0"
+            },
+            "tool": {
+                "milie-mind": {
+                    # Don't include sensitive data in defaults
+                    "groq_api_key": None
+                }
+            }
+        }
     except Exception as e:
         st.error(f"Error loading project configuration: {str(e)}")
         return None
 
 def get_groq_api_key():
     """Get Groq API key with priority: env > secrets > toml"""
-    # Try environment variable first
+    # Try environment variable first (recommended for production)
     api_key = os.getenv("GROQ_API_KEY")
     if api_key:
         return api_key
     
-    # Try Streamlit secrets
+    # Try Streamlit secrets (good for Streamlit Cloud deployment)
     if hasattr(st.secrets, "GROQ_API_KEY"):
         return st.secrets.GROQ_API_KEY
     
-    # Finally, try TOML config
+    # Finally, try TOML config (mainly for local development)
     config = load_project_config()
     if config and "tool" in config and "milie-mind" in config["tool"]:
         return config["tool"]["milie-mind"].get("groq_api_key")
@@ -63,8 +77,10 @@ client_groq = Groq(api_key=api_key)
 # Load project configuration for sidebar
 project_config = load_project_config()
 if project_config:
-    st.sidebar.text(f"Version: {project_config['project']['version']}")
-    st.sidebar.text(f"App: {project_config['project']['name']}")
+    # Only show version info if we want to display it in production
+    if os.getenv("SHOW_VERSION_INFO", "false").lower() == "true":
+        st.sidebar.text(f"Version: {project_config['project']['version']}")
+        st.sidebar.text(f"App: {project_config['project']['name']}")
 
 # Detecta o tema atual
 def get_theme():

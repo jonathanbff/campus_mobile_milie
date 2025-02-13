@@ -1,18 +1,18 @@
 # Core dependencies
-streamlit==1.32.0
-python-dotenv==1.0.0
+streamlit
+python-dotenv
 
 # Audio and recording
-streamlit-mic-recorder==0.1.1
+streamlit-mic-recorder
 
 # API Client
-groq==0.4.2
+groq
 
 # PDF Generation
-reportlab==4.1.0
+reportlab
 
 # Data Visualization
-plotly==5.18.0
-
+plotly
 # File handling and utilities
-python-dateutil==2.8.2 
+python-dateutil
+tomli 

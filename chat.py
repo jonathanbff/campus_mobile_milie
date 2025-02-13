@@ -12,7 +12,15 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 import tempfile
 from datetime import datetime
-import tomli  # Add this import for reading TOML files
+import tomli
+
+# Must be the first Streamlit command
+st.set_page_config(
+    page_title="Milie Mind Bot 🧠",
+    page_icon="🧠",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
 def load_project_config():
     """Load project configuration from pyproject.toml"""
@@ -41,12 +49,6 @@ def get_groq_api_key():
     
     return None
 
-# Load project configuration
-project_config = load_project_config()
-if project_config:
-    st.sidebar.text(f"Version: {project_config['project']['version']}")
-    st.sidebar.text(f"App: {project_config['project']['name']}")
-
 # Load environment variables
 load_dotenv()
 
@@ -58,13 +60,11 @@ if not api_key:
 
 client_groq = Groq(api_key=api_key)
 
-# Configurações iniciais da página
-st.set_page_config(
-    page_title="Milie Mind Bot 🧠",
-    page_icon="🧠",
-    layout="centered",
-    initial_sidebar_state="collapsed"
-)
+# Load project configuration for sidebar
+project_config = load_project_config()
+if project_config:
+    st.sidebar.text(f"Version: {project_config['project']['version']}")
+    st.sidebar.text(f"App: {project_config['project']['name']}")
 
 # Detecta o tema atual
 def get_theme():
